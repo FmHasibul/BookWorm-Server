@@ -1,7 +1,41 @@
 const express = require('express');
 const cors = require('cors');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express()
+require('dotenv').config();
+const category = require('./category.json')
+const books = require('./books.json');
+
+
+
+app.use(cors())
+app.use(express.json());
+
+
+const uri = process.env.DB_URI;
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+async function run() {
+    try {
+
+    }
+
+    finally {
+    }
+}
+
+run().catch(err => console.log(err))
+app.get('/category', (req, res) => {
+    res.send(category)
+})
+app.get('/category/:id', (req, res) => {
+    const id = req.params.id
+    const matching = books.filter(ctg => ctg.categoryId == id)
+
+
+    res.send(matching)
+})
+
 
 
 
@@ -11,5 +45,15 @@ app.get('/', (req, res) => {
 
 
 app.listen(port, () => {
+
+    client.connect(err => {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log('connect to Mongodb');
+        }
+    });
+
     console.log(`Book Resell server is running in port ${port}`);
 })
