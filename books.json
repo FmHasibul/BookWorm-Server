@@ -6,12 +6,14 @@
         "price": 79,
         "picture": "https://i.ibb.co/Tq1JMvV/311668198-5687790501259292-9135210789435259951-n.jpg",
         "used": 2,
-        "loction": "Rupatoli",
+        "condition": "Fair",
+        "status": "available",
+        "location": "Rupatoli",
         "name": "Science Books ",
         "sellerName": "Hasib ",
         "verified": "true",
         "email": "sanfordrogers@vicon.com",
-        "phone": "+1 (870) 505-2744"
+        "phone": "+88 (01)7 505-2744"
     },
     {
         "categoryId": 1,
@@ -20,12 +22,14 @@
         "price": 79,
         "picture": "https://i.ibb.co/85yx8CZ/292729582-7846092232127762-2993235397246457377-n.jpg",
         "used": 1.5,
-        "loction": "Rupatoli",
+        "condition": "Good",
+        "status": "available",
+        "location": "Rupatoli",
         "name": "Admission Guide ",
         "sellerName": "Novel ",
         "verified": "true",
         "email": "sanfordrogers@vicon.com",
-        "phone": "+1 (870) 505-2744"
+        "phone": "+88 (01)7 505-2744"
     },
     {
         "categoryId": 2,
@@ -34,12 +38,14 @@
         "price": 66,
         "picture": "https://i.ibb.co/mD6YjHZ/311614779-5103637529740183-8917337520222771044-n.jpg",
         "used": 4,
-        "loction": "Nothullabad",
+        "condition": "Excilent",
+        "status": "available",
+        "location": "Nothullabad",
         "name": "Random Novel ",
         "sellerName": "Shamim ",
         "verified": "false",
         "email": "shelbyrogers@rooforia.com",
-        "phone": "+1 (955) 482-2547"
+        "phone": "+88 (01)7 482-2547"
     },
     {
         "categoryId": 2,
@@ -48,12 +54,14 @@
         "price": 36,
         "picture": "https://i.ibb.co/Mccr8PZ/309455920-5343239449132588-7930650787183522667-n.jpg",
         "used": 4.2,
-        "loction": "Nothullabad",
+        "condition": "Good",
+        "status": "available",
+        "location": "Nothullabad",
         "name": "Kathie ",
         "sellerName": "Shamim ",
         "verified": "false",
         "email": "shelbyrogers@rooforia.com",
-        "phone": "+1 (955) 482-2547"
+        "phone": "+88 (01)7 482-2547"
     },
     {
         "categoryId": 3,
@@ -62,12 +70,14 @@
         "price": 45,
         "picture": "https://i.ibb.co/hRSQ9mQ/292286427-4857274161044542-139029129015636516-n.jpg",
         "used": 3.5,
-        "loction": "Nothullabad",
+        "condition": "Fair",
+        "status": "available",
+        "location": "Nothullabad",
         "name": "HOTD",
         "sellerName": "Hasib ",
         "verified": "true",
         "email": "stevensrogers@olympix.com",
-        "phone": "+1 (978) 451-3080"
+        "phone": "+88 (01)7 451-3080"
     },
     {
         "categoryId": 3,
@@ -76,11 +86,13 @@
         "price": 50,
         "picture": "https://i.ibb.co/zSKy17q/311033031-6184387311575813-7863745144525723800-n.jpg",
         "used": 5.6,
-        "loction": "Nothullabad",
+        "condition": "good",
+        "status": "available",
+        "location": "Nothullabad",
         "name": "Harry Potter",
         "sellerName": "Shamim ",
         "verified": "false",
         "email": "stevensrogers@olympix.com",
-        "phone": "+1 (978) 451-3080"
+        "phone": "+88 (01)7 451-3080"
     }
 ]
