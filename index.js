@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
+const jwt = require('jsonwebtoken');
 const app = express()
 require('dotenv').config();
 
@@ -10,7 +11,22 @@ require('dotenv').config();
 app.use(cors())
 app.use(express.json());
 
+//  JWTverfication 
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send('unauthorized access');
 
+    }
+    const token = authHeader.splite(' ')[1]
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+        req.decoded = decoded;
+        next()
+    })
+}
 
 
 
@@ -22,6 +38,22 @@ async function run() {
         const productCollections = client.db('bookResell').collection('products')
         const userCollections = client.db('bookResell').collection('users')
         const orderCollections = client.db('bookResell').collection('orders')
+
+
+        // getTokken 
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await userCollections.findOne(query)
+            console.log(user);
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '10d' });
+                return res.send({ accessToken: token })
+            }
+
+            res.status(403).send({ accessToken: '' })
+        })
+
 
         // category API 
         app.get('/category', async (req, res) => {
@@ -37,6 +69,13 @@ async function run() {
             const matching = await productCollections.find(query).toArray()
             res.send(matching)
         });
+
+        // products API 
+        app.get('/products', async (req, res) => {
+            const query = {}
+            const result = await productCollections.find(query).toArray()
+            res.send(result)
+        })
 
         //  user API 
         app.get('/users', async (req, res) => {
