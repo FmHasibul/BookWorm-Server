@@ -18,7 +18,7 @@ function verifyJWT(req, res, next) {
         return res.status(401).send('unauthorized access');
 
     }
-    const token = authHeader.splite(' ')[1]
+    const token = authHeader.split(' ')[1]
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
         if (err) {
             return res.status(403).send({ message: 'forbidden access' })
@@ -45,7 +45,6 @@ async function run() {
             const email = req.query.email;
             const query = { email: email };
             const user = await userCollections.findOne(query)
-            console.log(user);
             if (user) {
                 const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '10d' });
                 return res.send({ accessToken: token })
@@ -77,13 +76,22 @@ async function run() {
             res.send(result)
         })
 
+        // Add product API 
+
+        app.post('/products', async (req, res) => {
+            const product = req.body
+            console.log(product);
+            const result = await productCollections.insertOne(product)
+            res.send(result)
+        })
+
         //  user API 
         app.get('/users', async (req, res) => {
             const query = {}
             const result = await userCollections.find(query).toArray()
             res.send(result)
         });
-
+        // user API 
         app.get('/users/:id([0-9a-fA-F]{24})', async (req, res) => {
             const id = req.params.id;
             // console.log(id);
@@ -94,11 +102,41 @@ async function run() {
 
 
         });
-
+        // Add user api 
         app.post('/users', async (req, res) => {
             const user = req.body
             const result = await userCollections.insertOne(user)
             res.send(result)
+        });
+
+        // Make Admin API 
+        app.put('/users/admin/:id', verifyJWT, async (req, res) => {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await userCollections.findOne(query)
+            console.log(user);
+            if (user?.role !== 'Admin') {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    role: 'Admin'
+                }
+            }
+            const result = await userCollections.updateOne(filter, updateDoc, options);
+            res.send(result);
+
+
+        });
+        app.get("/users/admin/:email", async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollections.findOne(query)
+
+            res.send({ isAdmin: user?.role === 'Admin' })
         });
         // add order API 
         app.post('/order', async (req, res) => {
