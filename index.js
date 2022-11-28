@@ -108,13 +108,29 @@ async function run() {
             const result = await userCollections.insertOne(user)
             res.send(result)
         });
+        // sellerList API 
+        app.get('/users/sellers', async (req, res) => {
+            const role = req.query.role
+            const query = { role: role }
+            console.log(query);
+            const seller = await userCollections.find(query).toArray()
+            res.send(seller)
+
+        })
+        app.get('/users/buyers', async (req, res) => {
+            const role = req.query.role
+            const query = { role: role }
+            console.log(query);
+            const seller = await userCollections.find(query).toArray()
+            res.send(seller)
+
+        })
 
         // Make Admin API 
         app.put('/users/admin/:id', verifyJWT, async (req, res) => {
             const decodedEmail = req.decoded.email;
             const query = { email: decodedEmail };
             const user = await userCollections.findOne(query)
-            console.log(user);
             if (user?.role !== 'Admin') {
                 return res.status(403).send({ message: 'forbidden access' })
             }
