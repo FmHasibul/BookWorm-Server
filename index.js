@@ -38,7 +38,18 @@ async function run() {
         const productCollections = client.db('bookResell').collection('products')
         const userCollections = client.db('bookResell').collection('users')
         const orderCollections = client.db('bookResell').collection('orders')
+        // Verfy Admin 
+        async function verifyAdmin(req, res, next) {
 
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await userCollections.findOne(query)
+            if (user?.role !== 'Admin') {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            // console.log(decodedEmail);
+            next()
+        }
 
         // getTokken 
         app.get('/jwt', async (req, res) => {
@@ -64,7 +75,6 @@ async function run() {
         app.get('/category/:id', async (req, res) => {
             const id = parseInt(req.params.id)
             const query = { categoryId: id }
-            console.log(query);
             const matching = await productCollections.find(query).toArray()
             res.send(matching)
         });
@@ -77,13 +87,33 @@ async function run() {
         })
 
         // Add product API 
-
         app.post('/products', async (req, res) => {
             const product = req.body
             console.log(product);
             const result = await productCollections.insertOne(product)
             res.send(result)
         })
+
+        // add order API 
+        app.post('/order', async (req, res) => {
+            const order = req.body
+            const result = await orderCollections.insertOne(order)
+            res.send(result)
+        });
+        app.get('/orders', verifyJWT, async (req, res) => {
+            const email = req.query.email;
+
+            const decodedEmail = req.decoded.email;
+
+            if (email !== decodedEmail) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            const query = { email: email }
+            const myorders = await orderCollections.find(query).toArray();
+            res.send(myorders);
+        });
+
+
 
         //  user API 
         app.get('/users', async (req, res) => {
@@ -107,26 +137,47 @@ async function run() {
             const result = await userCollections.insertOne(user)
             res.send(result)
         });
+        app.delete('/users/:id([0-9a-fA-F]{24})', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const query = { _id: ObjectId(id) }
+            const result = await userCollections.deleteOne(query)
+            res.send(result)
+        });
         // sellerList API 
-        app.get('/users/sellers', async (req, res) => {
+        app.get('/users/sellers', verifyJWT, async (req, res) => {
             const role = req.query.role
             const query = { role: role }
-            console.log(query);
             const seller = await userCollections.find(query).toArray()
             res.send(seller)
 
         })
-        app.get('/users/buyers', async (req, res) => {
+        app.get('/users/buyers', verifyJWT, async (req, res) => {
             const role = req.query.role
             const query = { role: role }
-            console.log(query);
             const seller = await userCollections.find(query).toArray()
             res.send(seller)
 
         })
 
         // Make Admin API 
-        app.put('/users/admin/:id', verifyJWT, async (req, res) => {
+        app.put('/users/admin/:id', verifyJWT, verifyAdmin, async (req, res) => {
+
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    role: 'Admin'
+                }
+            }
+            const result = await userCollections.updateOne(filter, updateDoc, options);
+            res.send(result);
+
+
+        });
+        // verify Seller 
+        app.put('/users/verify/:id', verifyJWT, async (req, res) => {
             const decodedEmail = req.decoded.email;
             const query = { email: decodedEmail };
             const user = await userCollections.findOne(query)
@@ -138,7 +189,7 @@ async function run() {
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    role: 'Admin'
+                    verified: true
                 }
             }
             const result = await userCollections.updateOne(filter, updateDoc, options);
@@ -154,12 +205,7 @@ async function run() {
 
             res.send({ isAdmin: user?.role === 'Admin' })
         });
-        // add order API 
-        app.post('/order', async (req, res) => {
-            const order = req.body
-            const result = await userCollections.insertOne(order)
-            res.send(result)
-        });
+
 
 
     }
