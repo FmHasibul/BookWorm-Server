@@ -99,9 +99,8 @@ async function run() {
             // console.log(query);
             const result = await userCollections.findOne(query)
             res.send(result)
-
-
         });
+
         // Add user api 
         app.post('/users', async (req, res) => {
             const user = req.body
@@ -147,6 +146,7 @@ async function run() {
 
 
         });
+        // Admin API 
         app.get("/users/admin/:email", async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
