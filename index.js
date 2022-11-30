@@ -38,6 +38,7 @@ async function run() {
         const productCollections = client.db('bookResell').collection('products')
         const userCollections = client.db('bookResell').collection('users')
         const orderCollections = client.db('bookResell').collection('orders')
+        const advertiseCollections = client.db('bookResell').collection('advertised')
 
         // Verfy Admin 
         async function verifyAdmin(req, res, next) {
@@ -103,7 +104,7 @@ async function run() {
         // Add product API 
         app.post('/products', async (req, res) => {
             const product = req.body
-            console.log(product);
+            // console.log(product);
             const result = await productCollections.insertOne(product)
             res.send(result)
         })
@@ -131,7 +132,7 @@ async function run() {
 
 
         //  user API 
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {}
             const result = await userCollections.find(query).toArray()
             res.send(result)
@@ -185,6 +186,13 @@ async function run() {
 
             res.send({ isSeller: user?.role === 'seller' })
         });
+        app.get("/users/sellerVerify/:email", async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollections.findOne(query)
+
+            res.send({ isVerified: user?.verified === true })
+        });
         // Buyer api 
         app.get('/users/buyers', verifyJWT, verifyAdmin, async (req, res) => {
             const role = req.query.role
@@ -220,7 +228,6 @@ async function run() {
         });
         // verify Seller 
         app.put('/users/verify/:id', verifyJWT, verifyAdmin, async (req, res) => {
-
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
             const options = { upsert: true };
@@ -231,10 +238,28 @@ async function run() {
             }
             const result = await userCollections.updateOne(filter, updateDoc, options);
             res.send(result);
-
-
         });
 
+        // advertise api 
+        app.post('/seller/advertise', verifyJWT, async (req, res) => {
+            const advProduct = req.body
+            // console.log(product);
+            const result = await advertiseCollections.insertOne(advProduct)
+            res.send(result)
+        })
+        // get advertised Product 
+        app.get('/seller/advertise', async (req, res) => {
+            const query = {}
+            const result = await advertiseCollections.find(query).toArray()
+            res.send(result)
+        })
+        app.delete('/seller/advertise/:id([0-9a-fA-F]{24})', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const query = { _id: ObjectId(id) }
+            const result = await advertiseCollections.deleteOne(query)
+            res.send(result)
+        });
 
 
 
